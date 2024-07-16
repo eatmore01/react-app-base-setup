@@ -1,9 +1,0 @@
-/.git
-/.vscode
-node_modules
-vite.config.ts
-postcss.config.ts
-tailwind.config.ts
-dist
-build
-*.d.ts
