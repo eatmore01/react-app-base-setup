@@ -9,6 +9,7 @@
 - if with jest add jest and babel start configure
 - add push and dev scripts in scripts folder
 - default husky init
+- default tailwind vite setup
 
 ```bash
 sh setup.sh  #without jest
@@ -16,6 +17,10 @@ sh setup.sh  #without jest
 
 ```bash
 sh setup.sh  jest #with jest
+```
+
+```bash
+sh setup.sh  tailwind #with tailwind
 ```
 
 ![image](./imeg.png)

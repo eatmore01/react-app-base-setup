@@ -1,11 +1,4 @@
-rm -rf scripts
-rm -rf infra
-
-mkdir scripts || true
-mkdir infra || true
-
-NEED_JEST=$1
-
+EXTRA=$1
 
 
 yarn add --dev eslint \
@@ -15,7 +8,6 @@ yarn add --dev eslint \
     prettier \
     eslint-config-prettier \
     eslint-plugin-prettier \
-    eslint-plugin-react-jsx-runtime \
     husky
 
 npx husky init
@@ -96,7 +88,6 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:import/recommended',
     'prettier',
-    'plugin:react/jsx-runtime',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -173,25 +164,9 @@ build
 EOF
 
 
-cat >> infra/DockerFile << EOF
-FROM node:20.15.0-bullseye
-
-RUN npm install -g npm@latest --force && npm install --global yarn --force
-
-WORKDIR /app
-
-COPY . /app
-
-RUN yarn
-
-EXPOSE 5173
 
 
-CMD [ "yarn", "dev", "--host", "0.0.0.0", "--port", "8000" ]
-
-EOF
-
-cat >> infra/DockerFile.dev << EOF
+cat >> DockerFile.dev << EOF
 
 FROM node:20.15.0-bullseye
 
@@ -213,7 +188,7 @@ CMD [ "yarn", "dev", "--host", "0.0.0.0", "--port", "8000" ]
 EOF
 
 
-cat >> scripts/push.sh << EOF
+cat >> push.sh << EOF
 
 #!/bin/bash
 
@@ -240,7 +215,7 @@ EOF
 
 
 
-cat >> scripts/dev.sh << EOF
+cat >> dev.sh << EOF
 
 #!/bin/bash
 
@@ -266,7 +241,7 @@ touch .env.local
 touch .env.example
 
 
-if  [ "$NEED_JEST" = 'jest' ]; then
+if  [ "$EXTRA" = 'jest' ]; then
 
 yarn add jest \
    @types/jest \
@@ -320,6 +295,42 @@ EOF
 fi
 
 
+if  [ "$EXTRA" = 'tailwind' ]; then
+
+
+yarn add --dev tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+
+
+cat >> tailwind.config.js << EOF
+
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+
+EOF
+
+cat >> index.css << EOF
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+EOF
+
+
+fi
+
+
 echo "add     
     "strictBindCallApply": true,
     "strictNullChecks": true,
@@ -331,3 +342,4 @@ echo "add
     in ur tsconfig.json file for very scrict mode
 "
 echo "setup complete press Enter for exit..."
+
