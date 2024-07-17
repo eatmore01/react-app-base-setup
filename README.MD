@@ -18,4 +18,4 @@ sh setup.sh  #without jest
 sh setup.sh  jest #with jest
 ```
 
-![image](./imeg.jpg)
+![image](./imeg.png)
