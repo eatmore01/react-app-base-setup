@@ -1,8 +1,6 @@
 #!/bin/bash
-
-PATH="$(pwd)"
 EXTRA=$1
-
+APP_PATH="$(pwd)"
 
 mkdir src/app
 mkdir src/pages
@@ -15,10 +13,10 @@ mv src/assets ./src/shared
 
 rm src/App.tsx && rm src/App.css
 
-rm src/index.css && mkdir src/app/styles 
+rm src/index.css
+mkdir src/app/styles
 
 cat >> src/app/styles/index.css << EOF 
-
 * {
   margin: 0; 
   padding: 0; 
@@ -27,7 +25,6 @@ cat >> src/app/styles/index.css << EOF
 EOF
 
 cat >> src/app/index.tsx << EOF
-
 export const App = () => {
   return <div>App</div>
 };
@@ -35,7 +32,6 @@ export const App = () => {
 EOF
 
 cat >> src/main.tsx << EOF
-
 //example main files views with setup alias 
 
 //import React from 'react';
@@ -52,20 +48,26 @@ cat >> src/main.tsx << EOF
 
 EOF
 
-#yarn add --dev eslint \
-#    eslint-plugin-react \
-#    @typescript-eslint/eslint-plugin \
-#    @typescript-eslint/parser \
-#    prettier \
-#    eslint-config-prettier \
-#    eslint-plugin-prettier \
-#    husky \
-#    @types/node
-#
-#npx husky init
+yarn add --dev eslint \
+    eslint-plugin-react \
+    @typescript-eslint/eslint-plugin \
+    @typescript-eslint/parser \
+    prettier \
+    eslint-config-prettier \
+    eslint-plugin-prettier \
+    husky \
+    @types/node
+
+npx husky init
+
+cat >> .husky/pre-commit << EOF
+#u cant add example command like yarn test, yarn lint, yarn build:prod, etc.
+
+yarn lint
+
+EOF
 
 cat >> example.tsconfig.json << EOF
-
 {
   "compilerOptions": {
     "composite": true,
@@ -114,7 +116,6 @@ cat >> example.tsconfig.json << EOF
 EOF
 
 cat >> example.vite.config.ts << EOF
-
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
@@ -154,7 +155,6 @@ EOF
 
 rm .eslintrc.cjs
 cat >> .eslintrc.cjs << EOF
-
 module.exports = {
   extends: [
     'eslint:recommended',
@@ -242,7 +242,6 @@ EOF
 
 
 cat >> DockerFile.dev << EOF
-
 FROM node:20.15.0-bullseye
 
 RUN npm install -g npm@latest --force && npm install --global yarn --force
@@ -259,18 +258,15 @@ VOLUME [ "/app" ]
 
 CMD [ "yarn", "dev", "--host", "0.0.0.0", "--port", "8000" ]
 
-
 EOF
 
 
-cat >> push.sh << EOF
-
+cat >> push.sh << "EOF"
 #!/bin/bash
 
-
 #first message after sh push.sh this is ur commit message
-#MESSAGE="$1"
-#DATE=$(date)
+MESSAGE="$1" 
+DATE=$(date)
 
 if [ -z "$MESSAGE" ]; then 
   echo "starting push to remote repo with auto message..."
@@ -285,18 +281,14 @@ else
   git push origin main 
   echo "Pushing complete success"
 fi
-
 EOF
 
-
-
 cat >> dev.sh << EOF
-
 #!/bin/bash
 
 docker build -t app:dev . -f Dockerfile.dev
 
-docker run -p 8090:8000 -v "$PATH:/app" -d --name dev --rm app:dev 
+docker run -p 8090:8000 -v "$APP_PATH:/app" -d --name dev --rm app:dev 
 
 echo "open browser on 0.0.0.0:8090"
 
@@ -345,7 +337,6 @@ module.exports = {
 EOF
 
 cat >> jest.config.js << EOF
-
 module.exports = {
   preset: 'babel-jest',
   // testEnvironment: 'jest-environment-jsdom',
@@ -373,13 +364,12 @@ fi
 if  [ "$EXTRA" = 'tailwind' ]; then
 
 
-#yarn add --dev tailwindcss postcss autoprefixer
-#npx tailwindcss init -p
+yarn add --dev tailwindcss postcss autoprefixer
+npx tailwindcss init -p
 
 rm tailwind.config.js
 
 cat >> tailwind.config.js << EOF
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -397,7 +387,6 @@ EOF
 rm src/app/styles/index.css
 
 cat >> src/app/styles/index.css << EOF
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
