@@ -1,18 +1,70 @@
+#!/bin/bash
+
+PATH="$(pwd)"
 EXTRA=$1
 
 
-yarn add --dev eslint \
-    eslint-plugin-react \
-    @typescript-eslint/eslint-plugin \
-    @typescript-eslint/parser \
-    prettier \
-    eslint-config-prettier \
-    eslint-plugin-prettier \
-    husky
+mkdir src/app
+mkdir src/pages
+mkdir src/widgets
+mkdir src/features
+mkdir src/entities
+mkdir src/shared
 
-npx husky init
+mv src/assets ./src/shared
 
-cat >> tsconfig.json.example << EOF
+rm src/App.tsx && rm src/App.css
+
+rm src/index.css && mkdir src/app/styles 
+
+cat >> src/app/styles/index.css << EOF 
+
+* {
+  margin: 0; 
+  padding: 0; 
+}  
+
+EOF
+
+cat >> src/app/index.tsx << EOF
+
+export const App = () => {
+  return <div>App</div>
+};
+
+EOF
+
+cat >> src/main.tsx << EOF
+
+//example main files views with setup alias 
+
+//import React from 'react';
+//import ReactDOM from 'react-dom/client';
+//import { App } from '@app/index..tsx';
+//import '@app/styles/index.css';
+//
+//ReactDOM.createRoot(document.getElementById('root')!).render(
+//  <React.StrictMode>
+//    <App />
+//  </React.StrictMode>
+//);
+
+
+EOF
+
+#yarn add --dev eslint \
+#    eslint-plugin-react \
+#    @typescript-eslint/eslint-plugin \
+#    @typescript-eslint/parser \
+#    prettier \
+#    eslint-config-prettier \
+#    eslint-plugin-prettier \
+#    husky \
+#    @types/node
+#
+#npx husky init
+
+cat >> example.tsconfig.json << EOF
 
 {
   "compilerOptions": {
@@ -33,29 +85,52 @@ cat >> tsconfig.json.example << EOF
     "jsx": "react-jsx",
     "forceConsistentCasingInFileNames": true,
 
+
     /* Linting */
     "strict": true,
-    "strictBindCallApply": true,
-    "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    //very strict mode
+    "strictBindCallApply": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
+    "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["src/components/*"],
-      "@shared/*": ["src/shared/*"],
-      "@pages/*": ["src/pages/*"],
       "@app/*": ["src/app/*"],
+      "@pages/*": ["src/pages/*"],
       "@widgets/*": ["src/widgets/*"],
-      "@store/*": ["src/shared/lib/storage/*"],
+      "@features/*": ["src/features/*"],
       "@entities/*": ["src/entities/*"],
-      "@features/*": ["src/features/*"]
+      "@shared/*": ["src/shared/*"],
     }
   },
   "include": ["src", "vite.config.ts"]
 }
+EOF
 
+cat >> example.vite.config.ts << EOF
+
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'node:path';
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@shared': path.resolve(__dirname, './src/shared'),
+      '@entities': path.resolve(__dirname, './src/entities'),
+      '@features': path.resolve(__dirname, './src/features'),
+    },
+  },
+});
 
 EOF
 
@@ -77,7 +152,7 @@ node_modules
 
 EOF
 
-
+rm .eslintrc.cjs
 cat >> .eslintrc.cjs << EOF
 
 module.exports = {
@@ -194,8 +269,8 @@ cat >> push.sh << EOF
 
 
 #first message after sh push.sh this is ur commit message
-MESSAGE="$1"
-DATE=$(date)
+#MESSAGE="$1"
+#DATE=$(date)
 
 if [ -z "$MESSAGE" ]; then 
   echo "starting push to remote repo with auto message..."
@@ -221,7 +296,7 @@ cat >> dev.sh << EOF
 
 docker build -t app:dev . -f Dockerfile.dev
 
-docker run -p 8090:8000 -v "/home/user/path/to/project:/app" -d --name dev --rm app:dev 
+docker run -p 8090:8000 -v "$PATH:/app" -d --name dev --rm app:dev 
 
 echo "open browser on 0.0.0.0:8090"
 
@@ -298,8 +373,8 @@ fi
 if  [ "$EXTRA" = 'tailwind' ]; then
 
 
-yarn add --dev tailwindcss postcss autoprefixer
-npx tailwindcss init -p
+#yarn add --dev tailwindcss postcss autoprefixer
+#npx tailwindcss init -p
 
 rm tailwind.config.js
 
@@ -319,27 +394,24 @@ export default {
 
 
 EOF
+rm src/app/styles/index.css
 
-cat >> example.index.css << EOF
+cat >> src/app/styles/index.css << EOF
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+}
 
 EOF
 
 fi
 
 
-echo "add     
-    "strictBindCallApply": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "allowSyntheticDefaultImports": true,
-    "allowImportingTsExtensions": true,
-    "noFallthroughCasesInSwitch": true
-    
-    in ur tsconfig.json file for very scrict mode
-"
-echo "setup complete press Enter for exit..."
+echo "Before push using push.sh scripts uncomment two string if scripts file"
 
+echo "Setup complete press Enter for exit..."
