@@ -221,7 +221,7 @@ cat >> dev.sh << EOF
 
 docker build -t app:dev . -f Dockerfile.dev
 
-docker run -p 8090:8000 -v "/home/jantttez/Documents/projects/vkcopy:/app" -d --name dev --rm app:dev 
+docker run -p 8090:8000 -v "/home/user/path/to/project:/app" -d --name dev --rm app:dev 
 
 echo "open browser on 0.0.0.0:8090"
 
@@ -301,6 +301,7 @@ if  [ "$EXTRA" = 'tailwind' ]; then
 yarn add --dev tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 
+rm tailwind.config.js
 
 cat >> tailwind.config.js << EOF
 
@@ -319,14 +320,13 @@ export default {
 
 EOF
 
-cat >> index.css << EOF
+cat >> example.index.css << EOF
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 EOF
-
 
 fi
 
