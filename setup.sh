@@ -44,8 +44,6 @@ cat >> src/main.tsx << EOF
 //    <App />
 //  </React.StrictMode>
 //);
-
-
 EOF
 
 yarn add --dev eslint \
