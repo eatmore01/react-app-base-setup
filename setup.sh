@@ -51,6 +51,8 @@ yarn add --dev eslint \
     @typescript-eslint/eslint-plugin \
     @typescript-eslint/parser \
     prettier \
+    eslint-plugin-simple-import-sort \
+    eslint-plugin-unused-imports \
     eslint-config-prettier \
     eslint-plugin-prettier \
     husky \
@@ -161,6 +163,9 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
+import unuserImport from 'eslint-plugin-unused-imports';
+import simplSort from 'eslint-plugin-simple-import-sort';
+import prettierplugin from 'eslint-plugin-prettier';
 
 export default tseslint.config({
   extends: [js.configs.recommended, ...tseslint.configs.recommended],
@@ -173,6 +178,9 @@ export default tseslint.config({
   plugins: {
     'react-hooks': reactHooks,
     'react-refresh': reactRefresh,
+    'unused-imports': unuserImport,
+    'simple-import-sort': simplSort,
+    prettier: prettierplugin,
   },
   rules: {
     ...reactHooks.configs.recommended.rules,
@@ -206,6 +214,7 @@ export default tseslint.config({
     ],
   },
 });
+
 
 #depricated config
 # module.exports = {
@@ -278,7 +287,7 @@ export default tseslint.config({
 # };
 EOF
 
-cat >> .eslintignore << EOF 
+cat >> .ignores << EOF 
 /.git
 /.vscode
 node_modules
@@ -351,6 +360,14 @@ docker rm dev --force
 docker rmi app:dev --force 
 
 docker image prune 
+
+EOF
+
+cat >> start.sh << EOF
+#!/bin/bash
+yarn
+
+sh dev.sh
 
 EOF
 
