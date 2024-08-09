@@ -36,7 +36,7 @@ cat >> src/main.tsx << EOF
 
 //import React from 'react';
 //import ReactDOM from 'react-dom/client';
-//import { App } from '@app/index..tsx';
+//import { App } from '@app/index';
 //import '@app/styles/index.css';
 //
 //ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -123,13 +123,16 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      '@app': path.resolve(__dirname, './src/app'),
       '@pages': path.resolve(__dirname, './src/pages'),
-      '@shared': path.resolve(__dirname, './src/shared'),
-      '@entities': path.resolve(__dirname, './src/entities'),
+      '@widgets': path.resolve(__dirname, './src/widgets'),
       '@features': path.resolve(__dirname, './src/features'),
+      '@entities': path.resolve(__dirname, './src/entities'),
+      '@shared': path.resolve(__dirname, './src/shared'),
     },
   },
 });
+
 
 EOF
 
@@ -140,7 +143,6 @@ cat >> .prettierrc  << EOF
   "singleQuote": true,
   "jsxSingleQuote": true,
   "tabWidth": 2,
-  "trailingComma": "es5"
 }
 EOF
 
@@ -152,47 +154,29 @@ node_modules
 EOF
 
 rm .eslintrc.cjs
-cat >> .eslintrc.cjs << EOF
-module.exports = {
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:import/recommended',
-    'prettier',
-  ],
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: 'tsconfig.json',
+cat >> .eslint.config.js << EOF
+
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config({
+  extends: [js.configs.recommended, ...tseslint.configs.recommended],
+  files: ['**/*.{ts,tsx}'],
+  ignores: ['dist'],
+  languageOptions: {
+    ecmaVersion: 2020,
+    globals: globals.browser,
   },
-  plugins: ['react', '@typescript-eslint', 'simple-import-sort', 'unused-imports'],
+  plugins: {
+    'react-hooks': reactHooks,
+    'react-refresh': reactRefresh,
+  },
   rules: {
-    'import/no-default-export': 'error',
-    'import/prefer-default-export': 'off',
-    'react/function-component-definition': [
-      2,
-      {
-        namedComponents: 'arrow-function',
-        unnamedComponents: 'arrow-function',
-      },
-    ],
-    'simple-import-sort/exports': 'error',
-    'simple-import-sort/imports': [
-      'error',
-      {
-        groups: [
-          ['^react.*', '^[a-zA-Z].*'],
-          ['^@(.*|$)'],
-          ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
-          ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
-          ['^.+\\.json$'],
-          ['^.+\\.s?css$'], // вот тут я хз как лучше импорты расположить
-        ],
-      },
-    ],
+    ...reactHooks.configs.recommended.rules,
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': [
       'error',
@@ -202,26 +186,96 @@ module.exports = {
         caughtErrorsIgnorePattern: '^_',
       },
     ],
-    'import/no-extraneous-dependencies': ['off'],
-    'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [
       'warn',
       { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
     ],
-    'react/jsx-props-no-spreading': 'off',
-    '@typescript-eslint/no-inferrable-types': [
+    'simple-import-sort/exports': 'error',
+    'simple-import-sort/imports': [
       'error',
       {
-        ignoreParameters: true,
+        groups: [
+          ['^react.*', '^[a-zA-Z].*'],
+          ['^@(.*|$)'],
+          ['^..(?!/?$)', '^../?$'],
+          ['^./(?=.*/)(?!/?$)', '^.(?!/?$)', '^./?$'],
+          ['^.+.json$'],
+          ['^.+.s?css$'],
+        ],
       },
     ],
-    'react/require-default-props': 'off',
-    'jsx-a11y/anchor-is-valid': 'off',
-    'react/prop-types': 'off',
-    'consistent-return': 'off',
   },
-};
+});
 
+#depricated config
+# module.exports = {
+#   extends: [
+#     'eslint:recommended',
+#     'plugin:react/recommended',
+#     'plugin:@typescript-eslint/recommended',
+#     'plugin:react-hooks/recommended',
+#     'plugin:import/recommended',
+#     'prettier',
+#   ],
+#   parser: '@typescript-eslint/parser',
+#   parserOptions: {
+#     ecmaVersion: 'latest',
+#     sourceType: 'module',
+#     project: 'tsconfig.json',
+#   },
+#   plugins: ['react', '@typescript-eslint', 'simple-import-sort', 'unused-imports'],
+#   rules: {
+#     'import/no-default-export': 'error',
+#     'import/prefer-default-export': 'off',
+#     'react/function-component-definition': [
+#       2,
+#       {
+#         namedComponents: 'arrow-function',
+#         unnamedComponents: 'arrow-function',
+#       },
+#     ],
+#     'simple-import-sort/exports': 'error',
+#     'simple-import-sort/imports': [
+#       'error',
+#       {
+#         groups: [
+#           ['^react.*', '^[a-zA-Z].*'],
+#           ['^@(.*|$)'],
+#           ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
+#           ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
+#           ['^.+\\.json$'],
+#           ['^.+\\.s?css$'], // вот тут я хз как лучше импорты расположить
+#         ],
+#       },
+#     ],
+#     'no-unused-vars': 'off',
+#     '@typescript-eslint/no-unused-vars': [
+#       'error',
+#       {
+#         argsIgnorePattern: '^_',
+#         varsIgnorePattern: '^_',
+#         caughtErrorsIgnorePattern: '^_',
+#       },
+#     ],
+#     'import/no-extraneous-dependencies': ['off'],
+#     'unused-imports/no-unused-imports': 'error',
+#     'unused-imports/no-unused-vars': [
+#       'warn',
+#       { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
+#     ],
+#     'react/jsx-props-no-spreading': 'off',
+#     '@typescript-eslint/no-inferrable-types': [
+#       'error',
+#       {
+#         ignoreParameters: true,
+#       },
+#     ],
+#     'react/require-default-props': 'off',
+#     'jsx-a11y/anchor-is-valid': 'off',
+#     'react/prop-types': 'off',
+#     'consistent-return': 'off',
+#   },
+# };
 EOF
 
 cat >> .eslintignore << EOF 
