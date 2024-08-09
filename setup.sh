@@ -60,6 +60,8 @@ yarn add --dev eslint \
 
 npx husky init
 
+rm .husky/pre-commit
+
 cat >> .husky/pre-commit << EOF
 #u cant add example command like yarn test, yarn lint, yarn build:prod, etc.
 
