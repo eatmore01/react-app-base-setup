@@ -44,4 +44,4 @@ sh push.sh #<ur commit message>
 
 wihtout commit message, commit message will become commit date
 
-![image](./imeg.png)
+![image](./image.png)

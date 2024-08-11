@@ -2,6 +2,20 @@
 EXTRA=$1
 APP_PATH="$(pwd)"
 
+printf "\n%s - Start Project setup.... \n"
+
+
+yarn create vite eatmore --template react-ts
+mv eatmore ./
+mv eatmore/* ./
+mv eatmore/.gitignore ./
+rm -rf eatmore
+
+printf "\n%s - Project setup success \n"
+
+printf "\n%s - Folder Structure setup.... \n"
+
+
 mkdir src/app
 mkdir src/pages
 mkdir src/widgets
@@ -46,6 +60,12 @@ cat >> src/main.tsx << EOF
 //);
 EOF
 
+printf "\n%s - Folder Structure setup success \n"
+
+
+printf "\n%s - Instaling Dependensy... \n"
+
+
 yarn add --dev eslint \
     eslint-plugin-react \
     @typescript-eslint/eslint-plugin \
@@ -58,16 +78,17 @@ yarn add --dev eslint \
     husky \
     @types/node
 
+printf "\n%s - Instaling Dependensy success \n"
+
 npx husky init
 
 rm .husky/pre-commit
 
-cat >> .husky/pre-commit << EOF
-#u cant add example command like yarn test, yarn lint, yarn build:prod, etc.
+yarn husky add .husky/pre-commit "yarn lint"
 
-yarn lint
 
-EOF
+
+printf "\n%s - Adding example vite and tsconfig file \n"
 
 cat >> example.tsconfig.json << EOF
 {
@@ -117,6 +138,8 @@ cat >> example.tsconfig.json << EOF
 }
 EOF
 
+
+
 cat >> example.vite.config.ts << EOF
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -140,6 +163,10 @@ export default defineConfig({
 
 EOF
 
+printf "\n%s - Added example vite and tsconfig file  \n"
+
+printf "\n%s - Adding Prettier config \n"
+
 cat >> .prettierrc  << EOF
 {
   "endOfLine": "auto",
@@ -156,6 +183,11 @@ node_modules
 #.dist
 
 EOF
+
+printf "\n%s - Added Prettier config \n"
+
+
+printf "\n%s - Adding Eslint Config ... \n"
 
 rm .eslintrc.cjs
 cat >> .eslint.config.js << EOF
@@ -302,7 +334,11 @@ build
 EOF
 
 
+printf "\n%s - Added Eslint config \n"
 
+
+
+printf "\n%s - Adding Dockerfile... \n"
 
 cat >> DockerFile.dev << EOF
 FROM node:20.15.0-bullseye
@@ -322,6 +358,14 @@ VOLUME [ "/app" ]
 CMD [ "yarn", "dev", "--host", "0.0.0.0", "--port", "8000" ]
 
 EOF
+
+
+printf "\n%s - Added Dockerfile \n"
+
+
+
+
+printf "\n%s - Adding scripts... \n"
 
 
 cat >> push.sh << "EOF"
@@ -373,6 +417,9 @@ sh dev.sh
 
 EOF
 
+printf "\n%s - Added scripts success \n"
+
+
 
 touch .env.local
 
@@ -380,6 +427,7 @@ touch .env.example
 
 
 if  [ "$EXTRA" = 'jest' ]; then
+printf "\n%s - Start Jest setup.... \n"
 
 yarn add jest \
    @types/jest \
@@ -429,11 +477,14 @@ cat >> src/tests/setup-test.ts << EOF
 import '@testing-library/jest-dom/extend-expect';
 EOF
 
+
+printf "\n%s - Jest setup success \n"
 fi
 
 
 if  [ "$EXTRA" = 'tailwind' ]; then
 
+printf "\n%s - Start Tailwind setup.... \n"
 
 yarn add --dev tailwindcss postcss autoprefixer
 npx tailwindcss init -p
@@ -452,9 +503,8 @@ export default {
   },
   plugins: [],
 }
-
-
 EOF
+
 rm src/app/styles/index.css
 
 cat >> src/app/styles/index.css << EOF
@@ -469,9 +519,15 @@ cat >> src/app/styles/index.css << EOF
 
 EOF
 
+printf "\n%s - Tailwind setup success \n"
+
 fi
 
 
-echo "Before push using push.sh scripts uncomment two string if scripts file"
+printf "\n%s - Instaling package.json dependencies... \n"
 
-echo "Setup complete press Enter for exit..."
+
+yarn 
+
+
+printf "\n%s - Instaling package.json dependencies success \n"
