@@ -1,5 +1,6 @@
 ## whats this scripts doing
 
+- setup base yarn react ts project
 - add dev dockerfile for vite app
 - add prettier and eslint base config
 - add push and dev scripts in scripts
